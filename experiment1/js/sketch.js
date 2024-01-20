@@ -7,61 +7,103 @@
 
 // Constants - User-servicable parts
 // In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
+'use strict';
 
-// Globals
-let myInstance;
-let canvasContainer;
+var c;
+var lineModuleSize = 0;
+var angle = 0;
+var angleSpeed = 1;
+var lineModule = [];
+var lineModuleIndex = 0;
 
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
+var clickPosX = 0;
+var clickPosY = 0;
 
-    myMethod() {
-        // code to run when method is called
-    }
+function preload() {
+  lineModule[1] = loadImage('data/02.svg');
+  lineModule[2] = loadImage('data/03.svg');
+  lineModule[3] = loadImage('data/04.svg');
+  lineModule[4] = loadImage('data/05.svg');
 }
 
-// setup() function is called once when the program starts
 function setup() {
-    // place our canvas, making it fit our container
-    canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-    canvas.parent("canvas-container");
-    // resize canvas is the page is resized
-    $(window).resize(function() {
-        console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
-    });
-    // create an instance of the class
-    myInstance = new MyClass(VALUE1, VALUE2);
+  createCanvas(windowWidth, windowHeight);
+  background(255);
+  cursor(CROSS);
+  strokeWeight(0.75);
 
-    var centerHorz = windowWidth / 2;
-    var centerVert = windowHeight / 2;
+  c = color(181, 157, 0);
 }
 
-// draw() function is called repeatedly, it's the main animation loop
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+  if (mouseIsPressed && mouseButton == LEFT) {
+    var x = mouseX;
+    var y = mouseY;
+    if (keyIsPressed && keyCode == SHIFT) {
+      if (abs(clickPosX - x) > abs(clickPosY - y)) {
+        y = clickPosY;
+      } else {
+        x = clickPosX;
+      }
+    }
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
-    noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
+    push();
+    translate(x, y);
+    rotate(radians(angle));
+    if (lineModuleIndex != 0) {
+      tint(c);
+      image(lineModule[lineModuleIndex], 0, 0, lineModuleSize, lineModuleSize);
+    } else {
+      stroke(c);
+      line(0, 0, lineModuleSize, lineModuleSize);
+    }
+    angle += angleSpeed;
+    pop();
+  }
 }
 
-// mousePressed() function is called once after every time a mouse button is pressed
 function mousePressed() {
-    // code to run when mouse is pressed
+  // create a new random color and line length
+  lineModuleSize = random(50, 160);
+
+  // remember click position
+  clickPosX = mouseX;
+  clickPosY = mouseY;
+}
+
+function keyPressed() {
+  if (keyCode == UP_ARROW) lineModuleSize += 5;
+  if (keyCode == DOWN_ARROW) lineModuleSize -= 5;
+  if (keyCode == LEFT_ARROW) angleSpeed -= 0.5;
+  if (keyCode == RIGHT_ARROW) angleSpeed += 0.5;
+}
+
+function keyReleased() {
+  if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
+  if (keyCode == DELETE || keyCode == BACKSPACE) background(255);
+
+  // reverse direction and mirror angle
+  if (key == 'd' || key == 'D') {
+    angle += 180;
+    angleSpeed *= -1;
+  }
+
+  // change color
+  if (key == ' ') c = color(random(255), random(255), random(255), random(80, 100));
+  // default colors from 1 to 4
+  if (key == '1') c = color(181, 157, 0);
+  if (key == '2') c = color(0, 130, 164);
+  if (key == '3') c = color(87, 35, 129);
+  if (key == '4') c = color(197, 0, 123);
+
+  // load svg for line module
+  if (key == '5') lineModuleIndex = 0;
+  if (key == '6') lineModuleIndex = 1;
+  if (key == '7') lineModuleIndex = 2;
+  if (key == '8') lineModuleIndex = 3;
+  if (key == '9') lineModuleIndex = 4;
 }
