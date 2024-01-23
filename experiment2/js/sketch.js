@@ -9,7 +9,9 @@
 // In a longer project I like to put these in a separate file
 'use strict';
 
-var c;
+var tileCount = 20;
+var actRandomSeed = 0;
+
 var lineModuleSize = 0;
 var angle = 0;
 var angleSpeed = 1;
@@ -27,83 +29,56 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(600, 600);
   background(255);
-  cursor(CROSS);
   strokeWeight(0.75);
-
-  c = color(181, 157, 0);
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-  if (mouseIsPressed && mouseButton == LEFT) {
-    var x = mouseX;
-    var y = mouseY;
-    if (keyIsPressed && keyCode == SHIFT) {
-      if (abs(clickPosX - x) > abs(clickPosY - y)) {
-        y = clickPosY;
-      } else {
-        x = clickPosX;
+  translate(width / tileCount / 2, height / tileCount / 2);
+
+  background(255);
+
+  randomSeed(actRandomSeed);
+
+  for (var gridY = 0; gridY < tileCount; gridY++) {
+    for (var gridX = 0; gridX < tileCount; gridX++) {
+
+      var posX = width / tileCount * gridX;
+      var posY = height / tileCount * gridY;
+
+      if (mouseX >= posX && mouseX < posX + width / tileCount && mouseY >= posY && mouseY < posY + height / tileCount) {
+        // Mouse is within the current grid cell
+        updateLineModule(gridX, gridY);
       }
     }
-
-    push();
-    translate(x, y);
-    rotate(radians(angle));
-    if (lineModuleIndex != 0) {
-      tint(c);
-      image(lineModule[lineModuleIndex], 0, 0, lineModuleSize, lineModuleSize);
-    } else {
-      stroke(c);
-      line(0, 0, lineModuleSize, lineModuleSize);
-    }
-    angle += angleSpeed;
-    pop();
   }
+
+  // Draw the line module
+  var x = mouseX;
+  var y = mouseY;
+
+  push();
+  translate(x, y);
+  rotate(radians(angle));
+  if (lineModuleIndex != 0) {
+    tint(181, 157, 0); // Use a default color, you can customize this
+    image(lineModule[lineModuleIndex], 0, 0, lineModuleSize, lineModuleSize);
+  } else {
+    stroke(181, 157, 0); // Use a default color, you can customize this
+    line(0, 0, lineModuleSize, lineModuleSize);
+  }
+  angle += angleSpeed;
+  pop();
+}
+
+function updateLineModule(gridX, gridY) {
+  // Update the line module based on the grid position
+  lineModuleIndex = (gridX + gridY) % 5; // You can customize this logic based on your needs
+  lineModuleSize = random(50, 160); // You can customize the size range
 }
 
 function mousePressed() {
-  // create a new random color and line length
-  lineModuleSize = random(50, 160);
-
-  // remember click position
-  clickPosX = mouseX;
-  clickPosY = mouseY;
+  actRandomSeed = random(100000);
 }
 
-function keyPressed() {
-  if (keyCode == UP_ARROW) lineModuleSize += 5;
-  if (keyCode == DOWN_ARROW) lineModuleSize -= 5;
-  if (keyCode == LEFT_ARROW) angleSpeed -= 0.5;
-  if (keyCode == RIGHT_ARROW) angleSpeed += 0.5;
-}
-
-function keyReleased() {
-  if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
-  if (keyCode == DELETE || keyCode == BACKSPACE) background(255);
-
-  // reverse direction and mirror angle
-  if (key == 'd' || key == 'D') {
-    angle += 180;
-    angleSpeed *= -1;
-  }
-
-  // change color
-  if (key == ' ') c = color(random(255), random(255), random(255), random(80, 100));
-  // default colors from 1 to 4
-  if (key == '1') c = color(181, 157, 0);
-  if (key == '2') c = color(0, 130, 164);
-  if (key == '3') c = color(87, 35, 129);
-  if (key == '4') c = color(197, 0, 123);
-
-  // load svg for line module
-  if (key == '5') lineModuleIndex = 0;
-  if (key == '6') lineModuleIndex = 1;
-  if (key == '7') lineModuleIndex = 2;
-  if (key == '8') lineModuleIndex = 3;
-  if (key == '9') lineModuleIndex = 4;
-}
