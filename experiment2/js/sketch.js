@@ -1,6 +1,6 @@
 // sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+// Author: Emily Gavilanes
+// Date: Jan 23, 2024
 
 // Here is how you might set up an OOP p5.js project
 // Note that p5.js looks for a file called sketch.js
@@ -59,10 +59,10 @@ function draw() {
       translate(x, y);
       rotate(radians(angle));
       if (lineModuleIndex != 0) {
-        tint(181, 157, 0); // Default color
+        tint(181, 157, 0); 
         image(lineModule[lineModuleIndex], 0, 0, lineModuleSize, lineModuleSize);
       } else {
-        stroke(181, 157, 0); // Default color
+        stroke(181, 157, 0); 
         line(0, 0, lineModuleSize, lineModuleSize);
       }
       angle += angleSpeed;
@@ -85,9 +85,6 @@ function mousePressed() {
   clickPosY = mouseY;
 }
 
-function keyPressed() {
-  // Your existing keyPressed functionality here
-}
 
 function keyReleased() {
   // Your existing keyReleased functionality here
@@ -119,4 +116,4 @@ function keyReleased() {
   if (key == '9') lineModuleIndex = 4;
 }
 
-
+// code credit to https://editor.p5js.org/generative-design/sketches/P_2_3_1_02, https://editor.p5js.org/generative-design/sketches/P_2_1_2_01, ChatGPT
