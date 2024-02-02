@@ -1,6 +1,7 @@
 // sketch.js - original peice with generative methods
 // Author: Emily Gavilanes
 // Date: 1/29/2024
+// inspired by code from "P_2_1_3_05", "p_2_1_5_03", chatGPT, and p5.js resource library
 
 // Here is how you might set up an OOP p5.js project
 // Note that p5.js looks for a file called sketch.js
