@@ -20,53 +20,32 @@ var fontSizeStatic = false;
 var blackAndWhite = false;
 
 var img;
-
-// New variables for image manipulation
-var tileCountX = 4;
-var tileCountY = 4;
-var tileWidth;
-var tileHeight;
-var cropX;
-var cropY;
-
-var imgTiles = [];
-var selectMode = true;
-var randomMode = false;
+var lastFontSizeChange = 0;
+var fontSizeChangeInterval = 2000; // 2 seconds
 
 function preload() {
   img = loadImage('img/pic.png');
 }
 
 function setup() {
-  createCanvas(800, 600); // Adjust the canvas size accordingly
+  createCanvas(533, 796);
   textFont('Times');
   textSize(10);
   textAlign(LEFT, CENTER);
-
-  // Initialize image-related variables
-  tileWidth = width / tileCountY;
-  tileHeight = height / tileCountX;
-  imgTiles = [];
-
-  noCursor();
-  noFill();
-  stroke(255);
+  print(img.width + ' • ' + img.height);
 }
 
 function draw() {
   background(255);
-
-  // Call the image manipulation function
-  cropTiles();
 
   var x = 0;
   var y = 10;
   var counter = 0;
 
   while (y < height) {
-    // Translate position (display) to position (image)
+    // translate position (display) to position (image)
     img.loadPixels();
-    // Get current color
+    // get current color
     var imgX = round(map(x, 0, width, 0, img.width));
     var imgY = round(map(y, 0, height, 0, img.height));
     var c = color(img.get(imgX, imgY));
@@ -83,7 +62,7 @@ function draw() {
         fill(c);
       }
     } else {
-      // Greyscale to fontsize
+      // greyscale to fontsize
       var fontSize = map(greyscale, 0, 255, fontSizeMax, fontSizeMin);
       fontSize = max(fontSize, 1);
       textSize(fontSize);
@@ -97,12 +76,12 @@ function draw() {
     var letter = inputText.charAt(counter);
     text(letter, 0, 0);
     var letterWidth = textWidth(letter) + kerning;
-    // For the next letter ... x + letter width
+    // for the next letter ... x + letter width
     x += letterWidth;
 
     pop();
 
-    // Linebreaks
+    // linebreaks
     if (x + letterWidth >= width) {
       x = 0;
       y += spacing;
@@ -113,47 +92,17 @@ function draw() {
       counter = 0;
     }
   }
-  noLoop();
-}
 
-function cropTiles() {
-  tileWidth = width / tileCountY;
-  tileHeight = height / tileCountX;
-  imgTiles = [];
-
-  for (var gridY = 0; gridY < tileCountY; gridY++) {
-    for (var gridX = 0; gridX < tileCountX; gridX++) {
-      if (randomMode) {
-        cropX = int(random(mouseX - tileWidth / 2, mouseX + tileWidth / 2));
-        cropY = int(random(mouseY - tileHeight / 2, mouseY + tileHeight / 2));
-      }
-      cropX = constrain(cropX, 0, width - tileWidth);
-      cropY = constrain(cropY, 0, height - tileHeight);
-      imgTiles.push(img.get(cropX, cropY, tileWidth, tileHeight));
-    }
+  // Check for font size change every 2 seconds
+  if (millis() - lastFontSizeChange >= fontSizeChangeInterval) {
+    lastFontSizeChange = millis();
+    randomizeFontSizes();
   }
 }
 
-function mouseMoved() {
-  selectMode = true;
+function randomizeFontSizes() {
+  fontSizeMax = floor(random(10, 30));
+  fontSizeMin = floor(random(5, fontSizeMax - 5));
 }
 
-function mouseReleased() {
-  selectMode = false;
-  cropTiles();
-}
 
-function keyReleased() {
-  if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
-  if (key == '1') fontSizeStatic = !fontSizeStatic;
-  if (key == '2') blackAndWhite = !blackAndWhite;
-  loop();
-}
-
-function keyPressed() {
-  if (keyCode == UP_ARROW) fontSizeMax += 2;
-  if (keyCode == DOWN_ARROW) fontSizeMax -= 2;
-  if (keyCode == RIGHT_ARROW) fontSizeMin += 2;
-  if (keyCode == LEFT_ARROW) fontSizeMin -= 2;
-  loop();
-}
