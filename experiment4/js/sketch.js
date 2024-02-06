@@ -17,11 +17,14 @@ var spacing = 12; // line height
 var kerning = 0.5; // between letters
 
 var fontSizeStatic = false;
-var blackAndWhite = false;
-
+var useOriginalColors = true;
 var img;
 var lastFontSizeChange = 0;
+var lastRotationChange = 0;
+var lastColorChange = 0;
 var fontSizeChangeInterval = 2000; // 2 seconds
+var rotationChangeInterval = 2000; // 2 seconds
+var colorChangeInterval = 1000; // 1 second
 
 function preload() {
   img = loadImage('img/pic.png');
@@ -56,39 +59,45 @@ function draw() {
 
     if (fontSizeStatic) {
       textSize(fontSizeMax);
-      if (blackAndWhite) {
-        fill(greyscale);
-      } else {
+      if (useOriginalColors) {
         fill(c);
+      } else {
+        fill(greyscale);
       }
     } else {
       // greyscale to fontsize
       var fontSize = map(greyscale, 0, 255, fontSizeMax, fontSizeMin);
       fontSize = max(fontSize, 1);
       textSize(fontSize);
-      if (blackAndWhite) {
-        fill(0);
-      } else {
+      if (useOriginalColors) {
         fill(c);
+      } else {
+        fill(greyscale);
       }
     }
 
-    var letter = inputText.charAt(counter);
-    text(letter, 0, 0);
-    var letterWidth = textWidth(letter) + kerning;
-    // for the next letter ... x + letter width
-    x += letterWidth;
+    // Randomly rotate the words
+    if (millis() - lastRotationChange >= rotationChangeInterval) {
+      lastRotationChange = millis();
+      rotate(random(-PI / 4, PI / 4)); // Adjust the rotation angle as needed
+    }
+
+    var word = inputText.split(' ')[counter];
+    text(word, 0, 0);
+    var wordWidth = textWidth(word) + kerning;
+    // for the next word ... x + word width
+    x += wordWidth;
 
     pop();
 
     // linebreaks
-    if (x + letterWidth >= width) {
+    if (x + wordWidth >= width) {
       x = 0;
       y += spacing;
     }
 
     counter++;
-    if (counter >= inputText.length) {
+    if (counter >= inputText.split(' ').length) {
       counter = 0;
     }
   }
@@ -98,11 +107,23 @@ function draw() {
     lastFontSizeChange = millis();
     randomizeFontSizes();
   }
+
+  // Check for color change every 1 second
+  if (millis() - lastColorChange >= colorChangeInterval) {
+    lastColorChange = millis();
+    toggleColorScheme();
+  }
 }
 
 function randomizeFontSizes() {
   fontSizeMax = floor(random(10, 30));
   fontSizeMin = floor(random(5, fontSizeMax - 5));
 }
+
+function toggleColorScheme() {
+  useOriginalColors = !useOriginalColors;
+}
+
+
 
 
