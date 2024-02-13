@@ -29,10 +29,10 @@ var nOff = 0;
 var pointDensity = 8;
 
 var drawMode = 1;
-var fontSize = 250;
+var fontSize = 200;
 
 function setup() {
-  createCanvas(2400, 800);
+  createCanvas(2000, 800);
   frameRate(25);
   rectMode(CENTER);
   font = 'Arial';
