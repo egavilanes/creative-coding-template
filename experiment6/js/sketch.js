@@ -1,6 +1,7 @@
 // sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+// Author:Emily Gavilanes
+// Date:2/19/24
+// including code from "P_2_3_01" and Chat GPT
 
 // Here is how you might set up an OOP p5.js project
 // Note that p5.js looks for a file called sketch.js
